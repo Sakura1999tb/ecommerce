@@ -5,11 +5,11 @@ class Storage {
   public store: PersistentVector<Contract>;
 
   constructor() {
-    this.store = new PersistentVector<Contract>("");
+    this.store = new PersistentVector<Contract>("ct");
   }
 
   get(user: String): PersistentVector<Contract> {
-    let result = new PersistentVector<Contract>(""); // choose a unique prefix per collection
+    let result = new PersistentVector<Contract>("12"); // choose a unique prefix per collection
     for (let i = 0; i < this.store.length; i++) {
       const contract: Contract = this.store[i];
       if (contract.sender == user || contract.receiver == user) {
@@ -29,7 +29,7 @@ class Storage {
   }
 
   push(contract: Contract): void {
-    this.store.push(contract);
+    this.store.pushBack(contract);
   }
 
   getContract(user: String, id: String): Contract | null {
@@ -43,6 +43,13 @@ class Storage {
       }
     }
     return null;
+  }
+
+  deleteContract(): u64 {
+    while (!this.store.isEmpty) {
+      this.store.popBack();
+    }
+    return 1;
   }
 }
 

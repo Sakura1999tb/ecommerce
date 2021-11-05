@@ -13,6 +13,7 @@ export class AccountProfile {
   }
 }
 
+@nearBindgen
 export class AccountAuthen {
   public username: String;
   public password: String;
@@ -23,6 +24,7 @@ export class AccountAuthen {
   }
 }
 
+@nearBindgen
 export class Account {
   public accountAuthen: AccountAuthen;
   public accountProfile: AccountProfile;

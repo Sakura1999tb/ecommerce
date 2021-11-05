@@ -3,21 +3,12 @@ import {
   PersistentVector,
   Context,
   ContractPromiseBatch,
+  logging,
+  ContractPromise
 } from "near-sdk-as";
 import { AccountAuthen, AccountProfile } from "./AccountProfile.model";
 import { ContractInfomation } from "./ContractInfomation.model";
 import { compareProfile, get_profile } from "../utils";
-
-function makeid(length: i32): String {
-  var result = "";
-  var characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i <  length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength) as i32);
-  }
-  return result;
-}
 
 //this is required if using a local .env file for private key
 @nearBindgen
@@ -34,14 +25,19 @@ export class Contract {
     this.ownerId = Context.sender;
     this.receiver = receiver;
     this.sender = Context.sender;
-    this.id = makeid(10);
+    this.id = Context.blockTimestamp.toString();
     this.status = 0;
     this.statusSender = 0;
     this.statusReceiver = 0;
-    this.contractInfomation = contractInfomation
+    this.contractInfomation = contractInfomation;
   }
 
   updateStatus(user: String, status: u64): void {
+    logging.log(`user: ${user}`);
+    logging.log(`sender: ${this.sender}`);
+    logging.log(`receiver: ${this.receiver}`);
+
+
     if (user == this.sender) {
       this.statusSender = status;
     }
@@ -53,19 +49,24 @@ export class Contract {
   }
 
   action(): void {
-    if (this.statusSender && this.statusReceiver) {
+    if (this.statusSender && this.statusReceiver && Context.) {
       ContractPromiseBatch.create(this.sender as string).transfer(
         u128.from(this.contractInfomation.price)
       );
     }
   }
 
-  updateAccount(account: AccountAuthen, user: String): u64 {
-    if (user == this.sender) {
+  updateAccount(account: AccountAuthen): u64 {
+    logging.log(`account username: ${account.username}`);
+    logging.log(`account password: ${account.password}`);
+    logging.log(`Context.sender: ${Context.sender}`);
+
+    if (Context.sender == this.sender) {
       const check = this.checkAccount(account);
+      logging.log(`check: ${check}`);
       if (check) {
         this.contractInfomation.updateAccount(account);
-        return  1;
+        return 1;
       }
     }
     return 0;
